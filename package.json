@@ -1,0 +1,47 @@
+{
+	"name": "cs-photo-gallery",
+	"version": "0.0.1",
+	"description": "Select photos",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"scripts": {
+		"ngc": "ngc",
+		"build": "gulp clean && npm run ngc",
+		"start": "npm run build && npm publish"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/edu526/cs-photo-gallery.git"
+	},
+	"keywords": [
+		"ionic3",
+		"photo",
+		"gallery",
+		"angular4"
+	],
+	"author": "Eduardo Miguel De la Cruz Rojas",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/edu526/cs-photo-gallery/issues"
+	},
+	"homepage": "https://github.com/edu526/cs-photo-gallery#readme",
+	"devDependencies": {
+		"@angular/common": "4.2.2",
+		"@angular/compiler": "4.2.2",
+		"@angular/compiler-cli": "4.2.2",
+		"@angular/core": "4.2.2",
+		"@angular/forms": "4.2.2",
+		"@angular/http": "4.2.2",
+		"@angular/platform-browser": "4.2.2",
+		"@ionic-native/core": "^3.12.1",
+		"typescript": "2.3.4",
+		"rxjs": "5.4.0",
+		"zone.js": "0.8.12",
+		"del": "^2.2.2",
+		"gulp": "^3.9.1",
+		"ionic-angular": "^3.4.2"
+	},
+	"dependencies": {
+		"@ionic-native/photo-library": "^3.6.1"
+	}
+}
