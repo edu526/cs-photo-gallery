@@ -6,6 +6,7 @@ export interface ICsGalleryItem {
 	isImage?: boolean;
 	isVideo?: boolean;
 	isSelected?: boolean;
+	contentType?: string;
 
 	//Album
 	title?: string;

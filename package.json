@@ -7,7 +7,7 @@
 	"scripts": {
 		"ngc": "ngc",
 		"build": "gulp clean && npm run ngc",
-		"start": "npm run build && npm publish"
+		"deploy": "npm run build && npm publish"
 	},
 	"repository": {
 		"type": "git",
@@ -43,5 +43,10 @@
 	},
 	"dependencies": {
 		"@ionic-native/photo-library": "^3.6.1"
+	},
+	"cordova": {
+		"plugins": {
+			"cordova-plugin-photos": {}
+		}
 	}
 }

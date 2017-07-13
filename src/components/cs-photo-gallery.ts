@@ -1,6 +1,7 @@
 import { ViewController, Platform, NavParams, Content } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, NgZone } from '@angular/core';
+import { Observable } from 'rxjs/Rx';
 
 import { CsPhotoGalleryService } from './../providers/cs-photo-gallery.provider';
 import { ICsGalleryItem, ICsOptionsGallery } from './interfaces';
@@ -16,13 +17,16 @@ export class CsPhotoGalleryPage {
 	currentDirectory: string = "/";
 
 	files: ICsGalleryItem[] = [];
-	selectedFileItems: string[] = [];
 	isRoot: boolean = true;
 	showAlbums: boolean = false;
 	menssage: string;
+
+	private _selectedFileItems: string[] = [];
 	private _historyPosition: number[] = [];
 	private _backDirectory: string = '/';
 	private _options: ICsOptionsGallery;
+	private _zone: NgZone;
+
 
 	constructor(
 		private _viewCtrl: ViewController,
@@ -32,55 +36,58 @@ export class CsPhotoGalleryPage {
 		private _platform: Platform
 	) {
 		this._options = this._navParams.data || {};
+		this._zone = new NgZone({ enableLongStackTrace: false });
 		this._platform.registerBackButtonAction(() => this.backAlbums());
 	}
-	ionViewDidLoad() {
-		this._mediaGallerySrv.requestAuthorization()
-			.then(result => this._getPhotos())
-			.catch(err => {
-				this.menssage = 'Permissions werent granted';
-			});
+
+	ionViewWillEnter() {
+		this._selectedFileItems = [];
+		this._mediaGallerySrv.imagesObserver
+			.subscribe(photo => this._zone.run(() => this.files.push(photo)));
+
+		this._mediaGallerySrv.getAllPhotos();
 	}
 
 	fileSelected(fileSelected: ICsGalleryItem) {
 		if (fileSelected.isAlbum) {
 			this.isRoot = false;
-			this._getPhotos(fileSelected.id);
+			// this._getPhotos(fileSelected.id);
 		} else {
-			let index = this.files.findIndex(file => file.photoURL === fileSelected.photoURL);
+			let index = this.files.findIndex(file => file.id === fileSelected.id);
 			if (!this.files[index].isSelected) {
-				if (this.selectedFileItems.length < (this._options.maxFiles || 999)) {
+				if (this._selectedFileItems.length < (this._options.maxFiles || 999)) {
 					this.files[index].isSelected = true;
-					this.selectedFileItems.push(this.files[index].photoURL);
+					this._selectedFileItems.push(this.files[index].id);
 				}
 			}
 			else {
 				this.files[index].isSelected = false;
-				let ind = this.selectedFileItems.findIndex(file => file === fileSelected.photoURL);
-				this.selectedFileItems.splice(ind, 1);
+				let ind = this._selectedFileItems.findIndex(file => file === fileSelected.id);
+				this._selectedFileItems.splice(ind, 1);
 			}
 		}
 	}
 
 	backAlbums() {
-		if (this.isRoot) {
-			this.close();
-		} else {
-			this.isRoot = true;
-			this.getAlbums(true);
-		}
+		// if (this.isRoot) {
+		// 	this.close();
+		// } else {
+		// 	this.isRoot = true;
+		// 	this.getAlbums(true);
+		// }
 	}
 
 	done() {
-		this._viewCtrl.dismiss({ nativeURLs: this.selectedFileItems });
+		this.close();
+		this._mediaGallerySrv.getNativeData(this._selectedFileItems)
+			.subscribe(data => {
+				this._mediaGallerySrv.getNativeUrls.next({ nativeURLs: data });
+			});
 	}
 
 	close() {
-		this._viewCtrl.dismiss({ nativeURLs: [] });
-	}
-
-	cdvphotolibrary(url: string): any {
-		return url.startsWith('cdvphotolibrary://') ? this._sanitizer.bypassSecurityTrustUrl(url) : url;
+		this._mediaGallerySrv.cancel()
+		this._viewCtrl.dismiss();
 	}
 
 	errorUrl(error: ICsGalleryItem) {
@@ -88,40 +95,40 @@ export class CsPhotoGalleryPage {
 		this.files.splice(index, 1);
 	}
 
-	private _getPhotos(idAlbum?: string) {
-		this.menssage = 'Please wait...';
-		let positionY: number = window.scrollY;
-		this._historyPosition.push(positionY);
-		this.files = [];
-		this._mediaGallerySrv.getPhotos(idAlbum)
-			.then(itemsGallery => {
-				if(!itemsGallery.length) this.menssage = 'No images found';
-				this.files = itemsGallery;
-			});
-	}
-	getAlbums(show: boolean) {
-		this.menssage = 'Please wait...';
-		this.showAlbums = !this.showAlbums;
-		if (show) {
-			this.files = [];
-			this._mediaGallerySrv.getAlbums()
-				.then((itemsGallery) => {
-					if(!itemsGallery.length) this.menssage = 'No albums found';
-					this.files = itemsGallery;
+	// private _getPhotos(idAlbum?: string) {
+	// 	this.menssage = 'Please wait...';
+	// 	let positionY: number = window.scrollY;
+	// 	this._historyPosition.push(positionY);
+	// 	this.files = [];
+	// 	this._mediaGallerySrv.getPhotos(idAlbum)
+	// 		.then(itemsGallery => {
+	// 			if(!itemsGallery.length) this.menssage = 'No images found';
+	// 			this.files = itemsGallery;
+	// 		});
+	// }
+	// getAlbums(show: boolean) {
+	// 	this.menssage = 'Please wait...';
+	// 	this.showAlbums = !this.showAlbums;
+	// 	if (show) {
+	// 		this.files = [];
+	// 		this._mediaGallerySrv.getAlbums()
+	// 			.then((itemsGallery) => {
+	// 				if(!itemsGallery.length) this.menssage = 'No albums found';
+	// 				this.files = itemsGallery;
 
-					if (this._historyPosition) {
-						let newPosition = this._historyPosition.pop();
-						this.content.scrollToTop(newPosition);
-					}
+	// 				if (this._historyPosition) {
+	// 					let newPosition = this._historyPosition.pop();
+	// 					this.content.scrollToTop(newPosition);
+	// 				}
 
-				});
-		} else {
-			this._historyPosition = [];
-			this.isRoot = true;
-			this._getPhotos();
-		}
+	// 			});
+	// 	} else {
+	// 		this._historyPosition = [];
+	// 		this.isRoot = true;
+	// 		this._getPhotos();
+	// 	}
 
-	}
+	// }
 }
 
 export function getTemplate() {
@@ -140,19 +147,15 @@ export function getTemplate() {
 					<button class="cs-button-actions" ion-button (click)="done()">
 						Done
 					</button>
-					<button ion-button icon-only (click)="getAlbums(!showAlbums)">
-						<ion-icon *ngIf="!showAlbums" name="images"></ion-icon>
-						<ion-icon *ngIf="showAlbums" name="apps"></ion-icon>
-					</button>
 				</ion-buttons>
 			</ion-toolbar>
 		</ion-header>
 		<ion-content class="cs-content" #content>
 			<ion-row>
 				<ion-col col-4 *ngFor="let file of files" (click)="fileSelected(file)">
-					<img *ngIf="!file.isAlbum" [src]="cdvphotolibrary(file.thumbnailURL)" (error)="errorUrl(file)">
+					<img *ngIf="!file.isAlbum" [src]="file.thumbnailURL" (error)="errorUrl(file)">
 					<ion-icon *ngIf="file.isAlbum" class="album" name="images"></ion-icon>
-					<span>{{ file.title }}</span>
+					<span *ngIf="file.isAlbum">{{ file.title || file.name }}</span>
 					<span class="cs-selected" *ngIf="file.isSelected">
 						<ion-icon class="cs-icon" name="checkmark" color="light"></ion-icon>
 					</span>
@@ -160,7 +163,7 @@ export function getTemplate() {
 			</ion-row>
 			<ion-row class="blank" *ngIf="!files.length">
 				<ion-icon class="search" name="search" text-center></ion-icon>
-				<h3 text-center> {{ menssage }} </h3>
+				<h3 text-center> Please wait... </h3>
 			</ion-row>
 		</ion-content>
 `
@@ -194,20 +197,21 @@ export function getStyles() {
 			margin: 10px;
 		}
 		img {
-			height: 110px;
-			width: 110px;
 			background-color: #9c9c99;
+			width: 100px;
+			height: 100px;
+			object-fit: cover;
     	}
 		.blank {
 			text-align: center;
 			flex-direction: column;
 			opacity: .5;
 			padding-top: 20vh;
-			h4 {
-				margin: 0;
-				font-size: 1.6rem;
-			}
     	}
+		.blank h4 {
+			margin: 0;
+			font-size: 1.6rem;
+		}
 		.album{
 			font-size: 10rem;
 		}
