@@ -1,6 +1,5 @@
 import { ICsGalleryItem } from './../components/interfaces';
 import { Injectable, EventEmitter } from '@angular/core';
-// import { PhotoLibrary } from '@ionic-native/photo-library';
 
 import { Observable } from 'rxjs/Rx';
 import { File } from '@ionic-native/file';
