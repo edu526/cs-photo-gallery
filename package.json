@@ -42,11 +42,12 @@
 		"ionic-angular": "^3.4.2"
 	},
 	"dependencies": {
-		"@ionic-native/photo-library": "^3.6.1"
+		"@ionic-native/file": "4.0.0"
 	},
 	"cordova": {
 		"plugins": {
-			"cordova-plugin-photos": {}
+			"cordova-plugin-photos": {},
+			"cordova-plugin-file": {}
 		}
 	}
 }
