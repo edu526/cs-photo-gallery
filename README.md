@@ -11,20 +11,22 @@ To see this in action, checkout the [example project here](https://github.com/ed
   - [`CsPhotoGalleryController` Provider](#cs-photo-gallery-controller-provider)
 - [Examples](#examples)
 
-<br>
-
 # Installation
 ## Install the plugin
 
+[https://github.com/domax/cordova-plugin-photos](https://github.com/domax/cordova-plugin-photos)
 
 ```shell
 $ ionic cordova plugin add cordova-plugin-photos
 ```
+
 Since Android plugin implementation is written on Java 7, you have to switch your project to Java 7 or 8.
 
-If your project is Gradle-driven, just open your project's build.gradle script and replace JavaVersion.VERSION_1_6 to JavaVersion.VERSION_1_7, like that:
-
-[https://github.com/domax/cordova-plugin-photos](https://github.com/domax/cordova-plugin-photos)
+If your project is Gradle-driven, just open your project's
+```
+platform > android > build.gradle
+```
+script and replace JavaVersion.VERSION_1_6 to JavaVersion.VERSION_1_7, like that:
 
 ```object
 compileOptions {
@@ -131,7 +133,7 @@ export class TestPage {
   }
 }
 ```
-<br><br>
+
 ## Contribution
 - **Having an issue**? or looking for support? [Open an issue](https://github.com/edu526/cs-photo-gallery/issues/new) and we will get you the help you need.
 - Got a **new feature or a bug fix**? Fork the repo, make your changes, and submit a pull request.
@@ -139,6 +141,6 @@ export class TestPage {
 ## Support this project
 If you find this project useful, please star the repo to let people know that it's reliable. Also, share it with friends and colleagues that might find this useful as well. Thank you :smile:
 
-<br><br>
+<br>
 
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.me/EduardoDelaCruzRojas)
