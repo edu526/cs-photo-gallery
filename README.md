@@ -14,9 +14,27 @@ To see this in action, checkout the [example project here](https://github.com/ed
 <br>
 
 # Installation
+## Install the plugin
+
+
+```shell
+$ ionic cordova plugin add cordova-plugin-photos
+```
+Since Android plugin implementation is written on Java 7, you have to switch your project to Java 7 or 8.
+
+If your project is Gradle-driven, just open your project's build.gradle script and replace JavaVersion.VERSION_1_6 to JavaVersion.VERSION_1_7, like that:
+
+[https://github.com/domax/cordova-plugin-photos](https://github.com/domax/cordova-plugin-photos)
+
+```object
+compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+}
+```
 ## Install the module via NPM
 ```shell
-npm i --save cs-photo-gallery
+$ npm i --save cs-photo-gallery
 ```
 ## Import it in your app module
 
