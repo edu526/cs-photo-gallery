@@ -42,7 +42,7 @@
 		"ionic-angular": "^3.4.2"
 	},
 	"dependencies": {
-		"@ionic-native/file": "4.0.0"
+		"@ionic-native/file": "^4.0.0"
 	},
 	"cordova": {
 		"plugins": {

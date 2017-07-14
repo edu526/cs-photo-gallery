@@ -21,6 +21,7 @@ export class CsPhotoGalleryPage {
 	showAlbums: boolean = false;
 	menssage: string;
 
+	private _tmpfiles: ICsGalleryItem[] = [];
 	private _selectedFileItems: string[] = [];
 	private _historyPosition: number[] = [];
 	private _backDirectory: string = '/';
@@ -43,9 +44,19 @@ export class CsPhotoGalleryPage {
 	ionViewWillEnter() {
 		this._selectedFileItems = [];
 		this._mediaGallerySrv.imagesObserver
-			.subscribe(photo => this._zone.run(() => this.files.push(photo)));
-
+			.subscribe(photo => {
+				this._zone.run(() => {
+					this._tmpfiles.push(photo);
+					if (this._tmpfiles.length <= 50) this.files.push(photo);
+				})
+			});
 		this._mediaGallerySrv.getAllPhotos();
+	}
+
+	getPhotos(infiniteScroll) {
+		if (this.files.length !== this._tmpfiles.length)
+			if (this._tmpfiles.length) this.files = this.files.concat(this._tmpfiles.slice(this.files.length - 1, this.files.length + 49));
+		infiniteScroll.complete();
 	}
 
 	fileSelected(fileSelected: ICsGalleryItem) {
@@ -53,15 +64,15 @@ export class CsPhotoGalleryPage {
 			this.isRoot = false;
 			// this._getPhotos(fileSelected.id);
 		} else {
-			let index = this.files.findIndex(file => file.id === fileSelected.id);
-			if (!this.files[index].isSelected) {
-				if (this._selectedFileItems.length < (this._options.maxFiles || 999)) {
-					this.files[index].isSelected = true;
-					this._selectedFileItems.push(this.files[index].id);
+			let index = this._tmpfiles.findIndex(file => file.id === fileSelected.id);
+			if (!this._tmpfiles[index].isSelected) {
+				if (this._selectedFileItems.length < (this._options.maxFiles || 30)) {
+					this._tmpfiles[index].isSelected = true;
+					this._selectedFileItems.push(this._tmpfiles[index].id);
 				}
 			}
 			else {
-				this.files[index].isSelected = false;
+				this._tmpfiles[index].isSelected = false;
 				let ind = this._selectedFileItems.findIndex(file => file === fileSelected.id);
 				this._selectedFileItems.splice(ind, 1);
 			}
@@ -91,8 +102,8 @@ export class CsPhotoGalleryPage {
 	}
 
 	errorUrl(error: ICsGalleryItem) {
-		let index = this.files.findIndex(file => file.id === error.id);
-		this.files.splice(index, 1);
+		let index = this._tmpfiles.findIndex(file => file.id === error.id);
+		this._tmpfiles.splice(index, 1);
 	}
 
 	// private _getPhotos(idAlbum?: string) {
@@ -165,6 +176,9 @@ export function getTemplate() {
 				<ion-icon class="search" name="search" text-center></ion-icon>
 				<h3 text-center> Please wait... </h3>
 			</ion-row>
+			<ion-infinite-scroll (ionInfinite)="getPhotos($event)">
+				<ion-infinite-scroll-content></ion-infinite-scroll-content>
+			</ion-infinite-scroll>
 		</ion-content>
 `
 }

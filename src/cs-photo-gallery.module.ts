@@ -3,7 +3,7 @@ import { CsPhotoGalleryService } from './providers/cs-photo-gallery.provider';
 import { CsPhotoGalleryController } from './cs-photo-gallery.controller';
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
-
+import { File } from '@ionic-native/file';
 @NgModule({
 	imports: [
 		IonicModule
@@ -24,7 +24,8 @@ export class CsPhotoGalleryModule {
 			ngModule: CsPhotoGalleryModule,
 			providers: [
 				CsPhotoGalleryController,
-				CsPhotoGalleryService
+				CsPhotoGalleryService,
+				File
 			]
 		};
 	}

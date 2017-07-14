@@ -14,16 +14,17 @@ To see this in action, checkout the [example project here](https://github.com/ed
 # Installation
 ## Install the plugin
 
-[https://github.com/domax/cordova-plugin-photos](https://github.com/domax/cordova-plugin-photos)
-
+```shell
+$ ionic cordova plugin add cordova-plugin-file
+```
 ```shell
 $ ionic cordova plugin add cordova-plugin-photos
 ```
 
-Since Android plugin implementation is written on Java 7, you have to switch your project to Java 7 or 8.
+Since Android plugin implementation is written on Java 7, you have to switch your project to Java 7 or 8. [https://github.com/domax/cordova-plugin-photos](https://github.com/domax/cordova-plugin-photos)
 
 If your project is Gradle-driven, just open your project's
-```
+```shell
 platform > android > build.gradle
 ```
 script and replace JavaVersion.VERSION_1_6 to JavaVersion.VERSION_1_7, like that:
@@ -70,7 +71,7 @@ _(optional)_ Advanced configuration.
 
 Param | Type | Description | Default
 --- | --- | --- | ---
-`maxFiles` | number | Maximum number of selectable files. | `999`
+`maxFiles` | number | Maximum number of selectable files. | `30`
 
 ### Return
 
